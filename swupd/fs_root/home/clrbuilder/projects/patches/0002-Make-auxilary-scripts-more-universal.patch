@@ -1,0 +1,86 @@
+From a7476d2cd85bf80e70bb9f67c9615c66a5c2257f Mon Sep 17 00:00:00 2001
+From: Dmitry Rozhkov <dmitry.rozhkov@intel.com>
+Date: Fri, 29 Jan 2016 17:55:03 +0200
+Subject: [PATCH swupd-server 2/2] Make auxilary scripts more universal
+
+---
+ basic_creator.sh  |  2 +-
+ pack_maker.sh     |  4 ++--
+ zeropack_maker.sh | 36 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 39 insertions(+), 3 deletions(-)
+ create mode 100644 zeropack_maker.sh
+
+diff --git a/basic_creator.sh b/basic_creator.sh
+index d5ede28..f70fbbc 100755
+--- a/basic_creator.sh
++++ b/basic_creator.sh
+@@ -2,7 +2,7 @@
+ XZ_DEFAULTS="--threads 0"
+ PREVREL=`cat /var/lib/update/image/latest.version`
+
+-SWUPDREPO=/usr/src/clear-projects/swupd-server
++SWUPDREPO=`dirname $0`
+ BUNDLEREPO=/usr/src/clear-projects/clr-bundles
+
+ # remove things from $BUNDLEREPO/bundles to make local build faster,
+diff --git a/pack_maker.sh b/pack_maker.sh
+index 88e7dc7..d356403 100755
+--- a/pack_maker.sh
++++ b/pack_maker.sh
+@@ -20,10 +20,10 @@
+ #      consider which version-pair packs are meaningful for intermediate builds
+ #      and revert builds.
+
+-SWUPDREPO=${SWUPDREPO:-"/root/swupd-server"}
++SWUPDREPO=`dirname $0`
+ BUNDLEREPO=${BUNDLEREPO:-"/root/clr-bundles"}
+ SWUPDWEBDIR="/var/lib/update/www"
+-SWUPD_CERTS_DIR=${SWUPD_CERTS_DIR=:-"/root/swupd-certs"}
++SWUPD_CERTS_DIR=${SWUPD_CERTS_DIR:-"/root/swupd-certs"}
+
+ export XZ_DEFAULTS="--threads 0"
+
+diff --git a/zeropack_maker.sh b/zeropack_maker.sh
+new file mode 100644
+index 0000000..f7de590
+--- /dev/null
++++ b/zeropack_maker.sh
+@@ -0,0 +1,36 @@
++#!/bin/sh
++
++SWUPDREPO=`dirname $0`
++UPDATEDIR="/var/lib/update"
++VER=$1
++
++SWUPD_CERTS_DIR=${SWUPD_CERTS_DIR:-"/root/swupd-certs"}
++
++export XZ_DEFAULTS="--threads 0"
++
++export SWUPD_CERTS_DIR
++export LEAF_KEY="leaf.key.pem"
++export LEAF_CERT="leaf.cert.pem"
++export CA_CHAIN_CERT="ca-chain.cert.pem"
++export PASSPHRASE="${SWUPD_CERTS_DIR}/passphrase"
++
++MOM=${UPDATEDIR}/www/${VER}/Manifest.MoM
++
++if [ ! -e ${MOM} ]; then
++	echo "Error: no ${MOM}"
++        exit 1
++fi
++BUNDLE_LIST=$(cat ${MOM} | grep "^M\." | grep ${VER} | cut -f 4)
++for BUNDLE in $BUNDLE_LIST; do
++	#background them for parallelization
++	${SWUPDREPO}/swupd_make_pack 0 ${VER} ${BUNDLE} &
++done
++#now await all completing
++for job in $(jobs -p); do
++	wait ${job}
++	RET=$?
++	if [ "$RET" != "0" ]; then
++		echo "Error: zero pack subprocessor failed"
++		exit 1
++	fi
++done
+--
+2.5.0
