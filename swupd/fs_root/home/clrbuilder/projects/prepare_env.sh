@@ -1,4 +1,4 @@
-#!/bin/sh -xue
+#!/bin/sh -xe
 
 PROJ_DIR=/home/clrbuilder/projects
 PROXY_OPT=
