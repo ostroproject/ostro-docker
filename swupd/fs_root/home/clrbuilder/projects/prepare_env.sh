@@ -3,7 +3,7 @@
 PROJ_DIR=/home/clrbuilder/projects
 PROXY_OPT=
 
-if [ -n ${http_proxy} ]; then
+if [ -n "${http_proxy}" ]; then
     PROXY_OPT="-x http_proxy=${http_proxy}"
 fi
 
