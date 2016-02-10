@@ -1,7 +1,7 @@
-From a7476d2cd85bf80e70bb9f67c9615c66a5c2257f Mon Sep 17 00:00:00 2001
+From b676f22382459bfde4454d3d19438bfa5d07d904 Mon Sep 17 00:00:00 2001
 From: Dmitry Rozhkov <dmitry.rozhkov@intel.com>
 Date: Fri, 29 Jan 2016 17:55:03 +0200
-Subject: [PATCH swupd-server 2/2] Make auxilary scripts more universal
+Subject: [PATCH swupd-server 2/3] Make auxilary scripts more universal
 
 ---
  basic_creator.sh  |  2 +-
