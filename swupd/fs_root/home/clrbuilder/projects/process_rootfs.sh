@@ -19,3 +19,8 @@ echo "[III] Create delta pack"
 $SWUPDSRVDIR/pack_maker.sh $VER 2
 echo "[III] Create zeropack"
 /bin/sh -xue $SWUPDSRVDIR/zeropack_maker.sh $VER
+
+echo "[III] Update latest.version"
+echo $VER > /var/lib/update/image/latest.version
+mkdir -p /var/lib/update/www/version/format3
+echo $VER > /var/lib/update/www/version/format3/latest
