@@ -39,8 +39,7 @@ cd swupd-server
 autoreconf -fi
 ./configure
 make
-mkdir -p /var/lib/update/www
-cp /home/clrbuilder/projects/swupd-server/server.ini /var/lib/update/
+mkdir -p /var/lib/update
 
 dnf --assumeyes remove \
     libtool \

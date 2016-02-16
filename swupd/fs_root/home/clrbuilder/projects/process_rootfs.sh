@@ -1,15 +1,26 @@
-#!/bin/sh -xue
+#!/bin/sh -xe
 
 VER=$1
 
-if [ -z $VER ]; then
+if [ -z "${VER}" ]; then
     echo "ERROR: Version is not set. Exiting..."
     exit 1
 fi
 
-echo "The latest version so far is " `cat /var/lib/update/image/latest.version`
+UPDATEDIR="/var/lib/update"
+
+mkdir -p ${UPDATEDIR}/image
+mkdir -p ${UPDATEDIR}/log
+touch ${UPDATEDIR}/image/latest.version
+echo "The latest version so far is " `cat ${UPDATEDIR}/image/latest.version`
 
 SWUPDSRVDIR=`dirname $0`/swupd-server
+SWUPDSRVDIR=`realpath $SWUPDSRVDIR`
+
+cd ${UPDATEDIR}/log
+
+echo "[III] Refresh server.ini"
+cp $SWUPDSRVDIR/server.ini /var/lib/update/server.ini
 
 echo "[III] Create basic repo"
 $SWUPDSRVDIR/basic_creator.sh $VER
