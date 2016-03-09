@@ -37,7 +37,7 @@ curl ${PROXY_OPT} -L https://download.clearlinux.org/releases/5940/clear/source/
 cat patches/*.patch | patch -p1 -d swupd-server
 cd swupd-server
 autoreconf -fi
-./configure
+./configure --enable-bsdtar
 make
 mkdir -p /var/lib/update
 
@@ -52,6 +52,5 @@ dnf --assumeyes remove \
     bzip2-devel \
     make patch
 
-dnf --assumeyes --exclude="openssl tar rsync" autoremove
-# Just to be sure we haven't autoremoved too much even with --exclude used.
-dnf --assumeyes install openssl tar rsync
+dnf --assumeyes --exclude="openssl bsdtar rsync" autoremove
+dnf --assumeyes install openssl bsdtar rsync

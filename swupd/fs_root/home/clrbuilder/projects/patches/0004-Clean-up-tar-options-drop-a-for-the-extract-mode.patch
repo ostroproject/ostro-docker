@@ -1,0 +1,32 @@
+From 8e9d80db07d3b1b41ebd467074b70effc3d654e9 Mon Sep 17 00:00:00 2001
+From: Dmitry Rozhkov <dmitry.rozhkov@linux.intel.com>
+Date: Tue, 23 Feb 2016 14:50:37 +0200
+Subject: [PATCH] Clean up tar options: drop -a for the
+ extract mode.
+
+The -a option is not needed for the extract mode since tar
+auto-detects compression type from file format.
+
+Upstream-Status: Accepted
+
+Signed-off-by: Dmitry Rozhkov <dmitry.rozhkov@linux.intel.com>
+---
+ src/pack.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/pack.c b/src/pack.c
+index f021af9..b0c4b60 100644
+--- a/src/pack.c
++++ b/src/pack.c
+@@ -113,7 +113,7 @@ static void explode_pack_stage(int version, char *module)
+ 		 * time on the client...
+ 		 */
+ 		string_or_die(&tar, "tar --directory=" PACKSTAGE_DIR "/%s/%i/staged --warning=no-timestamp "
+-				TAR_PERM_ATTR_ARGS " -axf %s", module, version, path);
++				TAR_PERM_ATTR_ARGS " -xf %s", module, version, path);
+ 		ret = system(tar);
+ 		if (!ret) {
+ 			unlink(path);
+-- 
+2.5.0
+
